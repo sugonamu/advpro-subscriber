@@ -104,3 +104,27 @@ The `lazy_static` crate allows us to safely initialize static variables at runti
 
 
 #### Reflection Subscriber-2
+
+### Did you explore parts outside of the tutorial, such as `src/lib.rs`?
+
+Yes, I explored `src/lib.rs` to understand how global configuration and utility functions are managed in the project. From this file, I learned the following:
+
+- The `AppConfig` struct is used to define application-level configuration (such as instance name, publisher root URL, and receiver root URL). These values can be set via `.env` using the `dotenv` and `Figment` libraries.
+- The use of `lazy_static!` enables defining `REQWEST_CLIENT` and `APP_CONFIG` as globally accessible, lazily-initialized variables. This makes them reusable across different modules without the need to pass them around manually.
+- The file also defines a common `Result` type alias and a helper function `compose_error_response()` for consistent error handling across the application.
+
+This modular structure improves the maintainability of the codebase and helps centralize common components such as configuration, HTTP client setup, and error formatting.
+
+### How does the Observer pattern help when adding more Receiver instances? What about multiple Main instances?
+
+The Observer pattern simplifies adding new Receiver instances because each subscriber can register independently with the Publisher. The Publisher does not need to know any implementation details; it just pushes notifications to each registered URL. This allows us to add or remove Receiver instances dynamically without changing the Publisher logic.
+
+However, adding multiple instances of the Main app (Publisher) is more complex. Each instance will have its own memory space and thus its own list of subscribers unless they share a common external store (e.g., a centralized database or message broker). Without a shared backend, each instance would behave as a separate system, which could lead to inconsistent delivery of notifications.
+
+To scale the system with multiple Publisher instances, a shared subscriber registry would be necessary.
+
+### Have you tried creating your own Tests or enhancing the Postman collection?
+
+Yes, I enhanced the Postman collection by adding tests for multiple product topics and various combinations of Receiver URLs. I also used environment variables to switch between different app instances easily. This made the API testing process much more efficient and organized.
+
+I have not yet written automated tests in Rust, but working with Postman was useful both for verifying this tutorial and for applying similar testing methods in group projects involving REST APIs.
