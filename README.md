@@ -86,4 +86,21 @@ This is the place for you to write reflections:
 
 #### Reflection Subscriber-1
 
+### Why do we use `RwLock<Vec<Notification>>` instead of `Mutex<Vec<Notification>>`?
+
+In this tutorial, we use `RwLock<Vec<Notification>>` to synchronize access to the shared list of notifications. This is necessary because multiple threads might attempt to **read or write** the `Vec` concurrently (e.g., when receiving updates or when viewing the list of notifications via an endpoint).
+
+`RwLock` is more suitable than `Mutex` in this case because it allows **multiple readers at the same time**, but only one writer. Most operations in this context are **reads**, not writes. Using `RwLock` improves performance by avoiding unnecessary locking when only reading.
+
+If we had used `Mutex`, it would allow only one thread (either reader or writer) to access the data at a time, which could create a performance bottleneck, especially under high read traffic.
+
+### Why does Rust not allow us to mutate static variables directly like Java?
+
+Rust does not allow direct mutation of static variables because of its **ownership model** and **thread safety guarantees**. In Java, static variables are mutable and shared across threads, but the language does not enforce safe access — developers must handle synchronization manually.
+
+In Rust, mutable static variables are unsafe by default, as they can lead to **data races** if accessed concurrently. To avoid this, Rust enforces that any shared mutable data must be explicitly synchronized using tools like `Mutex`, `RwLock`, or libraries like `lazy_static`.
+
+The `lazy_static` crate allows us to safely initialize static variables at runtime and wrap them with synchronization primitives. This approach ensures that any mutation of global variables remains **safe and predictable**, adhering to Rust’s guarantees of memory safety and concurrency safety.
+
+
 #### Reflection Subscriber-2
